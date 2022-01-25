@@ -1,0 +1,9 @@
+<local-cache name="keyword" statistics="true">
+    <encoding media-type="application/x-protostream"/>
+    <indexing enabled="true" storage="local-heap">
+        <index-reader refresh-interval="1000"/>
+        <indexed-entities>
+            <indexed-entity>KeywordEntity</indexed-entity>
+        </indexed-entities>
+    </indexing>
+</local-cache>
