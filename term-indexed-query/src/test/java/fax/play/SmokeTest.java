@@ -9,6 +9,10 @@ package fax.play;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
 import org.infinispan.client.hotrod.Search;
@@ -24,7 +28,7 @@ public class SmokeTest {
    public static final String DESCRIPTION = "foo bar% baz";
 
    @Test
-   public void smoke() {
+   public void smoke() throws Exception {
       RemoteCacheManager remoteCacheManager = Config.start();
       RemoteCache<Integer, KeywordEntity> remoteCache = remoteCacheManager.getCache(Config.CACHE_NAME);
 
@@ -32,12 +36,21 @@ public class SmokeTest {
             .isInstanceOf(HotRodClientException.class)
             .hasMessageContaining("bytes can be at most 32766");
 
-      // the server continue to work
-      KeywordEntity entity = new KeywordEntity(createLargeDescription(1));
-      remoteCache.put(1, entity);
+      ExecutorService executorService = Executors.newFixedThreadPool(3);
+      for (int i=0; i<3; i++) {
+         int id = i+1;
+         executorService.submit(() -> {
+            // the server continue to work
+            KeywordEntity entity = new KeywordEntity(createLargeDescription(1));
+            remoteCache.put(id, entity);
+         });
+      }
+      executorService.shutdown();
+      executorService.awaitTermination(60, TimeUnit.SECONDS);
 
       QueryFactory queryFactory = Search.getQueryFactory(remoteCache);
-      assertThat(queryFactory.create("from KeywordEntity where keyword : 'foo bar0 baz'").execute().hitCount().orElse(-1)).isOne();
+      assertThat(queryFactory.create("from KeywordEntity where keyword : 'foo bar0 baz'").execute().hitCount().orElse(-1))
+            .isEqualTo(3);
    }
 
    public String createLargeDescription(int times) {
