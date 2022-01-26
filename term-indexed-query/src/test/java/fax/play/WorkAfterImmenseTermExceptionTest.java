@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import fax.play.config.Config;
 import fax.play.entity.KeywordEntity;
 
-public class SmokeTest {
+public class WorkAfterImmenseTermExceptionTest {
 
    public static final String DESCRIPTION = "foo bar% baz";
 
