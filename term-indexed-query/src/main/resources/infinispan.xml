@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<infinispan xmlns="urn:infinispan:config:13.0">
+    <cache-container>
+        <jmx domain="fax.play"/>
+        <local-cache name="keyword" statistics="true">
+            <encoding media-type="application/x-protostream"/>
+            <indexing enabled="true" storage="local-heap">
+                <index-reader refresh-interval="1000"/>
+                <indexed-entities>
+                    <indexed-entity>KeywordEntity</indexed-entity>
+                </indexed-entities>
+            </indexing>
+        </local-cache>
+    </cache-container>
+</infinispan>
