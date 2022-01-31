@@ -1,4 +1,6 @@
-<local-cache name="keyword" statistics="true">
+<local-cache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="urn:infinispan:config:13.0 https://infinispan.org/schemas/infinispan-config-fragment-13.0.xsd"
+             xmlns="urn:infinispan:config:13.0" name="keyword" statistics="true">
     <encoding media-type="application/x-protostream"/>
     <indexing enabled="true" storage="local-heap">
         <index-reader refresh-interval="1000"/>
