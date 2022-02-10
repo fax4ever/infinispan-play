@@ -10,7 +10,7 @@ import org.infinispan.query.remote.client.ProtobufMetadataManagerConstants;
 
 public class RemoteCacheManagerFactory {
 
-   private static final String CACHE_NAME = "multifarious";
+   public static final String CACHE_NAME = "multifarious";
 
    private static final String CACHE_DEFINITION =
          "<local-cache name=\"" + CACHE_NAME + "\" statistics=\"true\">" +
