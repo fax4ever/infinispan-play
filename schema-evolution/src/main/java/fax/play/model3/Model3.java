@@ -1,12 +1,16 @@
 package fax.play.model3;
 
 import org.infinispan.protostream.annotations.ProtoField;
+import org.infinispan.protostream.annotations.ProtoName;
+
+import fax.play.service.Model;
 
 /**
  * Inspired by {@code org.keycloak.playground.nodowntimeupgrade.infinispan.v4.InfinispanObjectEntity}
  * of https://github.com/keycloak/keycloak-playground
  */
-public class Model3 {
+@ProtoName("model")
+public class Model3 implements Model {
 
    @ProtoField(number = 1, required = true)
    public int entityVersion = 3;

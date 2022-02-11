@@ -8,7 +8,7 @@ import org.infinispan.commons.marshall.ProtoStreamMarshaller;
 import org.infinispan.protostream.GeneratedSchema;
 import org.infinispan.query.remote.client.ProtobufMetadataManagerConstants;
 
-public class RemoteCacheManagerFactory {
+public class CacheFactory {
 
    public static final String CACHE_NAME = "multifarious";
 
