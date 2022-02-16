@@ -1,4 +1,4 @@
-package fax.play.model2;
+package fax.play.model3;
 
 import org.infinispan.protostream.annotations.ProtoDoc;
 import org.infinispan.protostream.annotations.ProtoFactory;
@@ -8,27 +8,14 @@ import org.infinispan.protostream.annotations.ProtoName;
 import fax.play.service.Model;
 
 @ProtoDoc("@Indexed")
-@ProtoName("Model")
-public class Model2 implements Model {
+@ProtoName("Model2")
+public class Model2A implements Model {
 
-   @Deprecated
-   public String oldName;
-
-   public String newName;
+   private String newName;
 
    @ProtoFactory
-   public Model2(String oldName, String newName) {
-      // fill legacies:
-      this.oldName = oldName;
-
+   public Model2A(String newName) {
       this.newName = newName;
-   }
-
-   @Deprecated
-   @ProtoField(value = 1)
-   @ProtoDoc("@Field(store = Store.NO, analyze = Analyze.NO)")
-   public String getOldName() {
-      return oldName;
    }
 
    @ProtoField(value = 2)
