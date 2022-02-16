@@ -13,6 +13,7 @@
         <module>term-indexed-query</module>
         <module>emb-indexed-query</module>
         <module>schema-evolution</module>
+        <module>index-evolution</module>
     </modules>
 
 </project>
