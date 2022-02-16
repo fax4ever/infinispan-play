@@ -5,19 +5,28 @@ import org.infinispan.protostream.GeneratedSchema;
 
 public class CacheProvider {
 
+   public static final String CACHE1_NAME = "keyword1";
+   public static final String CACHE2_NAME = "keyword2";
+
    private RemoteCacheManager cacheManager;
 
-   public RemoteCacheManager init(GeneratedSchema schema, String cacheName) {
+   public RemoteCacheManager init(CacheDefinition cacheDefinition, GeneratedSchema ... schemas) {
       cacheManager = CacheFactory.create();
-      cacheManager.administration().removeCache(CacheFactory.CACHE1_NAME);
-      cacheManager.administration().removeCache(CacheFactory.CACHE2_NAME);
-      cacheManager = CacheFactory.create(schema, cacheName);
+      cacheManager.administration().removeCache(CACHE1_NAME);
+      cacheManager.administration().removeCache(CACHE2_NAME);
+      cacheManager = CacheFactory.create(cacheDefinition, schemas);
       return cacheManager;
    }
 
-   public RemoteCacheManager updateSchemaAndGet(GeneratedSchema schema, String cacheName) {
+   public RemoteCacheManager updateSchemaAndGet(CacheDefinition cacheDefinition, GeneratedSchema ... schemas) {
       stop();
-      cacheManager = CacheFactory.create(schema, cacheName);
+      cacheManager = CacheFactory.create(cacheDefinition, schemas);
+      return cacheManager;
+   }
+
+   public RemoteCacheManager updateSchemaAndGet(GeneratedSchema ... schemas) {
+      stop();
+      cacheManager = CacheFactory.create(null, schemas);
       return cacheManager;
    }
 

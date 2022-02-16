@@ -8,7 +8,7 @@ import org.infinispan.protostream.annotations.ProtoName;
 import fax.play.service.Model;
 
 @ProtoDoc("@Indexed")
-@ProtoName("Model")
+@ProtoName("Model3")
 public class Model3 implements Model {
 
    private String newName;
