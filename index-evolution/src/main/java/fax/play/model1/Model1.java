@@ -19,7 +19,7 @@ public class Model1 implements Model {
    }
 
    @ProtoField(value = 1)
-   @ProtoDoc("@Field(store = Store.NO, analyze = Analyze.YES, analyzer = @Analyzer(definition = \"keyword\"))")
+   @ProtoDoc("@Field(store = Store.NO, analyze = Analyze.NO)")
    public String getOldName() {
       return oldName;
    }

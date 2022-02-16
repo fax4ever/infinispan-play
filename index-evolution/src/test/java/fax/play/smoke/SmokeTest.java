@@ -61,8 +61,7 @@ public class SmokeTest {
       // targeting new field
       assertThatThrownBy(() -> factory.create("from Model where newName is not null").execute())
             .isInstanceOf(HotRodClientException.class)
-            .hasMessageContaining("org.infinispan.objectfilter.ParsingException", "" +
-                  "ISPN028501: The type Model does not have an accessible property named 'newName'");
+            .hasMessageContaining("Unknown field 'newName");
 
       cache = cacheProvider.updateSchemaAndGet(Schema3.INSTANCE);
 

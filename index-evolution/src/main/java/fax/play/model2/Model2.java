@@ -26,13 +26,13 @@ public class Model2 implements Model {
 
    @Deprecated
    @ProtoField(value = 1)
-   @ProtoDoc("@Field(store = Store.NO, analyze = Analyze.YES, analyzer = @Analyzer(definition = \"keyword\"))")
+   @ProtoDoc("@Field(store = Store.NO, analyze = Analyze.NO)")
    public String getOldName() {
       return oldName;
    }
 
-   @ProtoField(value = 2, required = true)
-   @ProtoDoc("@Field(store = Store.NO, analyze = Analyze.YES, analyzer = @Analyzer(definition = \"keyword\"))")
+   @ProtoField(value = 2)
+   @ProtoDoc("@Field(store = Store.NO, analyze = Analyze.NO)")
    public String getNewName() {
       return newName;
    }
