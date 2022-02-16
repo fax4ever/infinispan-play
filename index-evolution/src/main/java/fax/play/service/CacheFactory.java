@@ -10,10 +10,13 @@ import org.infinispan.query.remote.client.ProtobufMetadataManagerConstants;
 
 public class CacheFactory {
 
-   public static final String CACHE_NAME = "keyword";
+   private static final String CACHE_NAME_PLACEHOLDER = "{{cache-name}}";
+
+   public static final String CACHE1_NAME = "keyword1";
+   public static final String CACHE2_NAME = "keyword2";
 
    private static final String CACHE_DEFINITION =
-         "<local-cache name=\"" + CACHE_NAME + "\" statistics=\"true\">" +
+         "<local-cache name=\"" + CACHE_NAME_PLACEHOLDER + "\" statistics=\"true\">" +
                "    <encoding media-type=\"application/x-protostream\"/>" +
                "    <indexing enabled=\"true\" storage=\"local-heap\">" +
                "        <index-reader />" +
@@ -35,15 +38,15 @@ public class CacheFactory {
       return new RemoteCacheManager(builder.build());
    }
 
-   public static RemoteCacheManager create(GeneratedSchema schema) {
+   public static RemoteCacheManager create(GeneratedSchema schema, String cacheName) {
       ConfigurationBuilder builder = new ConfigurationBuilder();
       builder.addServer().host("127.0.0.1").port(ConfigurationProperties.DEFAULT_HOTROD_PORT)
             .security()
             .authentication()
             .username("user")
             .password("pass")
-            .remoteCache(CACHE_NAME)
-            .configuration(CACHE_DEFINITION)
+            .remoteCache(cacheName)
+            .configuration(CACHE_DEFINITION.replace(CACHE_NAME_PLACEHOLDER, cacheName))
             .marshaller(ProtoStreamMarshaller.class);
 
       // Add marshaller in the client

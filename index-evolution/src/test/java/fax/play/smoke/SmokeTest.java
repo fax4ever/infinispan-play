@@ -21,6 +21,7 @@ import fax.play.model2.Schema2;
 import fax.play.model3.Model3;
 import fax.play.model3.Model3Migrator;
 import fax.play.model3.Schema3;
+import fax.play.service.CacheFactory;
 import fax.play.service.CacheProvider;
 import fax.play.service.Model;
 
@@ -31,7 +32,9 @@ public class SmokeTest {
 
    @Test
    public void schemaEvolution() {
-      RemoteCache<String, Model> cache = cacheProvider.init(Schema1.INSTANCE);
+      RemoteCache<String, Model> cache = cacheProvider
+            .init(Schema1.INSTANCE, CacheFactory.CACHE1_NAME)
+            .getCache(CacheFactory.CACHE1_NAME);
       cache.clear();
 
       cache.put("1", new Model1("Fabio"));
@@ -41,7 +44,9 @@ public class SmokeTest {
       assertThat(result).extracting("oldName").containsExactly("Fabio");
       assertThat(result).hasOnlyElementsOfType(Model1.class);
 
-      cache = cacheProvider.updateSchemaAndGet(Schema2.INSTANCE);
+      cache = cacheProvider
+            .updateSchemaAndGet(Schema2.INSTANCE, CacheFactory.CACHE1_NAME)
+            .getCache(CacheFactory.CACHE1_NAME);
 
       cache.put("2", new Model2("Alessia", "Alessia"));
 
@@ -63,7 +68,9 @@ public class SmokeTest {
             .isInstanceOf(HotRodClientException.class)
             .hasMessageContaining("Unknown field 'newName");
 
-      cache = cacheProvider.updateSchemaAndGet(Schema3.INSTANCE);
+      cache = cacheProvider
+            .updateSchemaAndGet(Schema3.INSTANCE, CacheFactory.CACHE1_NAME)
+            .getCache(CacheFactory.CACHE1_NAME);
 
       cache.replace("1", Model3Migrator.migrate(cache.get("1")));
       cache.replace("2", Model3Migrator.migrate(cache.get("2")));
