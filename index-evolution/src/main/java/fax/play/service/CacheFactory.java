@@ -10,12 +10,30 @@ import org.infinispan.query.remote.client.ProtobufMetadataManagerConstants;
 
 public class CacheFactory {
 
-   public static final String CACHE_NAME = "multifarious";
+   public static final String CACHE_NAME = "keyword";
 
    private static final String CACHE_DEFINITION =
          "<local-cache name=\"" + CACHE_NAME + "\" statistics=\"true\">" +
-         "    <encoding media-type=\"application/x-protostream\" />" +
-         "</local-cache>";
+               "    <encoding media-type=\"application/x-protostream\"/>" +
+               "    <indexing enabled=\"true\" storage=\"local-heap\">" +
+               "        <index-reader />" +
+               "        <indexed-entities>" +
+               "            <indexed-entity>Model</indexed-entity>" +
+               "        </indexed-entities>" +
+               "    </indexing>" +
+               "</local-cache>";
+
+   public static RemoteCacheManager create() {
+      ConfigurationBuilder builder = new ConfigurationBuilder();
+      builder.addServer().host("127.0.0.1").port(ConfigurationProperties.DEFAULT_HOTROD_PORT)
+            .security()
+            .authentication()
+            .username("user")
+            .password("pass")
+            .marshaller(ProtoStreamMarshaller.class);
+
+      return new RemoteCacheManager(builder.build());
+   }
 
    public static RemoteCacheManager create(GeneratedSchema schema) {
       ConfigurationBuilder builder = new ConfigurationBuilder();
@@ -25,8 +43,8 @@ public class CacheFactory {
             .username("user")
             .password("pass")
             .remoteCache(CACHE_NAME)
-               .configuration(CACHE_DEFINITION)
-               .marshaller(ProtoStreamMarshaller.class);
+            .configuration(CACHE_DEFINITION)
+            .marshaller(ProtoStreamMarshaller.class);
 
       // Add marshaller in the client
       builder.addContextInitializer(schema);
