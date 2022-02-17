@@ -18,7 +18,7 @@ public class Model1A implements Model {
       this.oldName = oldName;
    }
 
-   @ProtoField(value = 1)
+   @ProtoField(value = 1, required = true)
    @ProtoDoc("@Field(store = Store.NO, analyze = Analyze.NO)")
    public String getOldName() {
       return oldName;

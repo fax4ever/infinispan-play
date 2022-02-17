@@ -1,4 +1,4 @@
-package fax.play.model3;
+package fax.play.model2;
 
 import org.infinispan.protostream.GeneratedSchema;
 import org.infinispan.protostream.annotations.AutoProtoSchemaBuilder;

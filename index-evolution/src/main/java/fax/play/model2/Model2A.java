@@ -1,4 +1,4 @@
-package fax.play.model3;
+package fax.play.model2;
 
 import org.infinispan.protostream.annotations.ProtoDoc;
 import org.infinispan.protostream.annotations.ProtoFactory;
@@ -18,7 +18,7 @@ public class Model2A implements Model {
       this.newName = newName;
    }
 
-   @ProtoField(value = 2)
+   @ProtoField(value = 1, required = true)
    @ProtoDoc("@Field(store = Store.NO, analyze = Analyze.NO)")
    public String getNewName() {
       return newName;

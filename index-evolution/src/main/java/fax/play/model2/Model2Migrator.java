@@ -1,4 +1,4 @@
-package fax.play.model3;
+package fax.play.model2;
 
 import fax.play.model1.Model1B;
 
