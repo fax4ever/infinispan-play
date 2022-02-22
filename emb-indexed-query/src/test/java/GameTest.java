@@ -53,5 +53,9 @@ public class GameTest {
       query = queryFactory.create("from fax.play.Game where description : 'involve'");
       matches = query.execute().list();
       assertThat(matches).extracting("name").containsExactly("Football");
+
+      Query<Object[]> projection = queryFactory.create("select name from fax.play.Game");
+      List<Object[]> results = projection.execute().list();
+      assertThat(results).hasSize(2);
    }
 }

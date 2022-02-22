@@ -1,5 +1,6 @@
 package fax.play;
 
+import org.hibernate.search.engine.backend.types.Projectable;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
@@ -9,7 +10,7 @@ import org.infinispan.protostream.annotations.ProtoField;
 @Indexed(index = "play")
 public class Game {
 
-   @KeywordField
+   @KeywordField(projectable = Projectable.YES)
    private String name;
 
    @FullTextField
