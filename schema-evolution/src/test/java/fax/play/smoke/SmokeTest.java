@@ -65,8 +65,10 @@ public class SmokeTest {
       assertThat(result).extracting("id").containsExactlyInAnyOrder("10000000", "20000000");
       assertThat(result).hasOnlyElementsOfType(Model2.class);
 
-      // if we try to target new fields with queries we get an exception
-      tryToTargetNewFieldWithQuery(cache);
+      query = Search.getQueryFactory(cache).create("from model where clientScopeId != null");
+      result = query.execute().list();
+      assertThat(result).extracting("id").containsExactlyInAnyOrder("10000000", "20000000");
+      assertThat(result).hasOnlyElementsOfType(Model2.class);
 
       cache = cacheProvider.updateSchemaAndGet(Schema3.INSTANCE);
 
@@ -101,13 +103,11 @@ public class SmokeTest {
       result = query.execute().list();
       assertThat(result).extracting("id").containsExactlyInAnyOrder("10000000", "20000000", "30000000");
       assertThat(result).hasOnlyElementsOfType(Model4.class);
-   }
 
-   private void tryToTargetNewFieldWithQuery(RemoteCache<String, Model> cache) {
-      assertThatThrownBy(() -> Search.getQueryFactory(cache).create("from model where clientScopeId != null").execute())
-            .isInstanceOf(HotRodClientException.class)
-            .hasMessageContaining("org.infinispan.objectfilter.ParsingException", "" +
-                  "ISPN028501: The type model does not have an accessible property named 'clientScopeId'");
+      query = Search.getQueryFactory(cache).create("from model where clientScopeId != null");
+      result = query.execute().list();
+      assertThat(result).extracting("id").containsExactlyInAnyOrder("10000000", "20000000", "30000000");
+      assertThat(result).hasOnlyElementsOfType(Model4.class);
    }
 
    @AfterAll
