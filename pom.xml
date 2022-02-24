@@ -14,6 +14,7 @@
         <module>emb-indexed-query</module>
         <module>schema-evolution</module>
         <module>index-evolution</module>
+        <module>aggregation-play</module>
     </modules>
 
 </project>
