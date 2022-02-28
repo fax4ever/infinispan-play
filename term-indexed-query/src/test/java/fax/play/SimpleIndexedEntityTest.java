@@ -26,4 +26,19 @@ public class SimpleIndexedEntityTest {
             .isEqualTo(1);
    }
 
+   @Test
+   public void reindex() {
+      RemoteCacheManager remoteCacheManager = Config.start();
+      RemoteCache<Integer, KeywordEntity> cache = remoteCacheManager.getCache(Config.CACHE_NAME);
+
+      KeywordEntity entity = new KeywordEntity("blablabla");
+      cache.put(1, entity);
+
+      remoteCacheManager.administration().reindexCache(Config.CACHE_NAME);
+
+      QueryFactory queryFactory = Search.getQueryFactory(cache);
+      assertThat(queryFactory.create("from KeywordEntity where keyword : 'blablabla'").execute().hitCount().orElse(-1))
+            .isEqualTo(1);
+   }
+
 }
