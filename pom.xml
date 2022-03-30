@@ -15,6 +15,7 @@
         <module>schema-evolution</module>
         <module>index-evolution</module>
         <module>aggregation-play</module>
+        <module>advanced-search</module>
     </modules>
 
 </project>
