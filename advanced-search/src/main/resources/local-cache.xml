@@ -1,0 +1,10 @@
+<local-cache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="urn:infinispan:config:13.0 https://infinispan.org/schemas/infinispan-config-fragment-13.0.xsd"
+             xmlns="urn:infinispan:config:13.0" name="developer" statistics="true">
+    <encoding media-type="application/x-protostream"/>
+    <indexing enabled="true" storage="local-heap">
+        <indexed-entities>
+            <indexed-entity>fax.play.entity.Developer</indexed-entity>
+        </indexed-entities>
+    </indexing>
+</local-cache>
