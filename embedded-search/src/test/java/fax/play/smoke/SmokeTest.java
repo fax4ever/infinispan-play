@@ -1,6 +1,7 @@
 package fax.play.smoke;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 
@@ -51,5 +52,9 @@ public class SmokeTest {
       query = factory.create("from fax.play.entity.Developer order by nick");
       list = query.execute().list();
       assertThat(list).extracting("nick").containsExactly("always7pan", "antonia3mini", "fax4ever", "vale5paga");
+
+      // multiple index fields from same entity field are not supported at the moment
+      assertThatThrownBy(() -> factory.create("from fax.play.entity.Developer order by alternative").execute().list())
+            .isInstanceOf(NullPointerException.class);
    }
 }

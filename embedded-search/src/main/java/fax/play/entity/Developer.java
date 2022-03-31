@@ -3,6 +3,7 @@ package fax.play.entity;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 import org.infinispan.protostream.GeneratedSchema;
 import org.infinispan.protostream.annotations.AutoProtoSchemaBuilder;
 import org.infinispan.protostream.annotations.ProtoFactory;
@@ -15,6 +16,7 @@ public class Developer {
    private String nick;
 
    @FullTextField
+   @KeywordField(name = "alternative")
    private String languages;
 
    @ProtoFactory
