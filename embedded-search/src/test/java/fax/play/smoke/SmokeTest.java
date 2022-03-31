@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.infinispan.Cache;
 import org.infinispan.manager.EmbeddedCacheManager;
+import org.infinispan.objectfilter.ParsingException;
 import org.infinispan.query.Search;
 import org.infinispan.query.dsl.Query;
 import org.infinispan.query.dsl.QueryFactory;
@@ -44,7 +45,7 @@ public class SmokeTest {
       cache.put("fabio", new Developer("fax4ever", "Java Go", 2));
       cache.put("alessia", new Developer("always7pan", "Java C++ Cobol Python", 7));
       cache.put("nenna", new Developer("vale5paga", "C# Lisp Cobol", 3));
-      cache.put("antonia", new Developer("antonia3mini", "Java C Prolog", 3));
+      cache.put("antonia", new Developer("antonia3mini", "Java C*a Prolog", 3));
 
       QueryFactory factory = Search.getQueryFactory(cache);
       Query<Developer> query = factory.create("from fax.play.entity.Developer where languages : 'Java'");
@@ -72,5 +73,14 @@ public class SmokeTest {
       // ISPN-13499 Ickle fulltext query not working with query parameters
       // assertThat(list).extracting("nick").containsExactlyInAnyOrder("fax4ever", "always7pan", "antonia3mini");
       assertThat(list).isEmpty();
+
+      query = factory.create("from fax.play.entity.Developer where languages : 'C*a'");
+      list = query.execute().list();
+      // ISPN-13603 Escape special char issue
+      assertThat(list).isEmpty();
+
+      // ISPN-13603 Escape special char issue
+      assertThatThrownBy(() -> factory.create("from fax.play.entity.Developer where languages : 'C\\*a'").execute().list())
+            .isInstanceOf(ParsingException.class);
    }
 }
