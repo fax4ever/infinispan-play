@@ -16,6 +16,7 @@
         <module>index-evolution</module>
         <module>aggregation-play</module>
         <module>advanced-search</module>
+        <module>embedded-search</module>
     </modules>
 
 </project>
