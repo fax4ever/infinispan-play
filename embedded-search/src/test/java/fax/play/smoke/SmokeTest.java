@@ -55,7 +55,7 @@ public class SmokeTest {
       list = query.execute().list();
       assertThat(list).extracting("nick").containsExactly("always7pan", "antonia3mini", "fax4ever", "vale5paga");
 
-      // multiple index fields from same entity field are not supported at the moment
+      // HSEARCH-13801 multiple index fields from same entity field are not supported at the moment
       assertThatThrownBy(() -> factory.create("from fax.play.entity.Developer order by alternative").execute().list())
             .isInstanceOf(NullPointerException.class);
 
@@ -65,5 +65,12 @@ public class SmokeTest {
       query.setParameters(params);
       list = query.execute().list();
       assertThat(list).extracting("nick").containsExactlyInAnyOrder("antonia3mini", "vale5paga");
+
+      query = factory.create("from fax.play.entity.Developer where languages : :language");
+      query.setParameter("language", "Java");
+      list = query.execute().list();
+      // ISPN-13499 Ickle fulltext query not working with query parameters
+      // assertThat(list).extracting("nick").containsExactlyInAnyOrder("fax4ever", "always7pan", "antonia3mini");
+      assertThat(list).isEmpty();
    }
 }
