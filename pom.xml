@@ -17,6 +17,7 @@
         <module>aggregation-play</module>
         <module>advanced-search</module>
         <module>embedded-search</module>
+        <module>unit-tests</module>
     </modules>
 
 </project>
