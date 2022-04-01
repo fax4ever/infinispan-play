@@ -12,11 +12,11 @@ import org.infinispan.query.remote.client.ProtobufMetadataManagerConstants;
 
 import fax.play.entity.SchemaImpl;
 
-public class Cache {
+public class Config {
 
    public static final String CACHE_NAME = "developer";
 
-   public static RemoteCacheManager create() {
+   public static RemoteCacheManager start() {
       ConfigurationBuilder builder = new ConfigurationBuilder();
       builder.addServer().host("127.0.0.1").port(ConfigurationProperties.DEFAULT_HOTROD_PORT)
             .security()

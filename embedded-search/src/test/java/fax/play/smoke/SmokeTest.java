@@ -27,12 +27,12 @@ public class SmokeTest {
    public EmbeddedCacheManager cacheManager;
 
    @BeforeAll
-   public void setUp() {
+   public void beforeAll() {
       cacheManager = Config.start();
    }
 
    @AfterAll
-   public void tearDown() {
+   public void afterAll() {
       if (cacheManager != null) {
          cacheManager.stop();
       }
@@ -41,6 +41,7 @@ public class SmokeTest {
    @Test
    public void test() {
       Cache<String, Developer> cache = cacheManager.getCache(Config.CACHE_NAME);
+      cache.clear();
 
       cache.put("fabio", new Developer("fax4ever", "Java Go", 2));
       cache.put("alessia", new Developer("always7pan", "Java C++ Cobol Python", 7));
@@ -82,5 +83,20 @@ public class SmokeTest {
       // ISPN-13603 Escape special char issue
       assertThatThrownBy(() -> factory.create("from fax.play.entity.Developer where languages : 'C\\*a'").execute().list())
             .isInstanceOf(ParsingException.class);
+
+      for (int i = 0; i < 20; i++) {
+         String id = (i < 10) ? "d0" + i : "d" + i;
+         cache.put(id, new Developer(id, "Java Go", i % 20));
+      }
+
+      query = factory.create("from fax.play.entity.Developer d WHERE d.projects IN (:id0, :id1, :id2, :id3, :id4, :id5, :id6, :id7, :id8, :id9, :id10, :id11, :id12, :id13, :id14, :id15, :id16, :id17, :id18, :id19) and d.languages : 'Java' order by d.nick");
+      for (int i = 0; i < 20; i++) {
+         query.setParameter("id" + i, i);
+      }
+      query.startOffset(10);
+      query.maxResults(-1);
+      list = query.execute().list();
+      // No ISPN-13702 on embedded
+      assertThat(list).extracting("nick").containsExactly("d08", "d09", "d10", "d11", "d12", "d13", "d14", "d15", "d16", "d17", "d18", "d19", "fax4ever");
    }
 }

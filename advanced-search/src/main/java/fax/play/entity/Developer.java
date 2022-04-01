@@ -13,11 +13,13 @@ public class Developer {
 
    private String nick;
    private String languages;
+   private Integer projects;
 
    @ProtoFactory
-   public Developer(String nick, String languages) {
+   public Developer(String nick, String languages, Integer projects) {
       this.nick = nick;
       this.languages = languages;
+      this.projects = projects;
    }
 
    @ProtoField(value = 1)
@@ -30,6 +32,12 @@ public class Developer {
    @ProtoDoc("@Field(store = Store.YES, analyze = Analyze.YES, analyzer = @Analyzer(definition = \"standard\"))")
    public String getLanguages() {
       return languages;
+   }
+
+   @ProtoField(value = 3)
+   @ProtoDoc("@Field(store = Store.YES, analyze = Analyze.NO)")
+   public Integer getProjects() {
+      return projects;
    }
 
    @Override
