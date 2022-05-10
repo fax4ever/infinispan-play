@@ -18,6 +18,7 @@
         <module>advanced-search</module>
         <module>embedded-search</module>
         <module>unit-tests</module>
+        <module>schema-update-emb</module>
     </modules>
 
 </project>
