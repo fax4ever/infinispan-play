@@ -26,33 +26,28 @@ public class PlayTest {
       assertThat(result).extracting("original").containsExactly("Fabio");
       assertThat(result).hasOnlyElementsOfType(ModelA.class);
 
-      // TODO ISPN-13648
-//      cache.getCacheManager().administration()
-//            .updateIndexSchema(Config.CACHE_NAME, Collections.singleton(ModelB.class))
-//            .join();
+      Config.updateSchemaIndex(cache);
 
-      // we need also to update the serialization context that I think it is impossible in embedded mode
+      cache.put("2", new ModelB("Alessia", "Alessia"));
 
-//      cache.put("2", new ModelB("Alessia", "Alessia"));
-//
-//      query = Search.getQueryFactory(cache).create("from fax.play.ModelB where original is not null");
-//      result = query.execute().list();
-//
-//      assertThat(result).extracting("original").containsExactly("Alessia");
-//      assertThat(result).hasOnlyElementsOfType(ModelB.class);
-//
-//      query = Search.getQueryFactory(cache).create("from fax.play.ModelB where original is not null");
-//      result = query.execute().list();
-//
-//      assertThat(result).extracting("different").containsExactly("Alessia");
-//      assertThat(result).hasOnlyElementsOfType(ModelB.class);
+      query = Search.getQueryFactory(cache).create("from Model where original is not null");
+      result = query.execute().list();
+
+      assertThat(result).extracting("original").containsExactly("Fabio", "Alessia");
+      assertThat(result).hasOnlyElementsOfType(ModelB.class);
+
+      query = Search.getQueryFactory(cache).create("from Model where different is not null");
+      result = query.execute().list();
+
+      assertThat(result).extracting("different").containsExactly("Alessia");
+      assertThat(result).hasOnlyElementsOfType(ModelB.class);
    }
 
    @AfterEach
    public void after() {
       if ( cache != null ) {
          cache.stop();
-         cache.getRemoteCacheManager().stop();
+         cache.getRemoteCacheContainer().stop();
       }
       cache = null;
    }
