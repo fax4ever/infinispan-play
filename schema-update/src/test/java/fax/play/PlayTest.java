@@ -4,15 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
-import org.infinispan.Cache;
-import org.infinispan.query.Search;
+import org.infinispan.client.hotrod.RemoteCache;
+import org.infinispan.client.hotrod.Search;
 import org.infinispan.query.dsl.Query;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 public class PlayTest {
 
-   private Cache<Object, Model> cache;
+   private RemoteCache<Object, Model> cache;
 
    @Test
    public void smoke() {
@@ -20,7 +20,7 @@ public class PlayTest {
 
       cache.put("1", new ModelA("Fabio"));
 
-      Query<Model> query = Search.getQueryFactory(cache).create("from fax.play.ModelA where original is not null");
+      Query<Model> query = Search.getQueryFactory(cache).create("from Model where original is not null");
       List<Model> result = query.execute().list();
 
       assertThat(result).extracting("original").containsExactly("Fabio");
@@ -52,7 +52,7 @@ public class PlayTest {
    public void after() {
       if ( cache != null ) {
          cache.stop();
-         cache.getCacheManager().stop();
+         cache.getRemoteCacheManager().stop();
       }
       cache = null;
    }

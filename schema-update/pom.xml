@@ -9,7 +9,7 @@
         <groupId>fax.play</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>schema-update-emb</artifactId>
+    <artifactId>schema-update</artifactId>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -21,13 +21,19 @@
     <dependencies>
         <dependency>
             <groupId>org.infinispan</groupId>
-            <artifactId>infinispan-core</artifactId>
+            <artifactId>infinispan-client-hotrod</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.infinispan</groupId>
-            <artifactId>infinispan-query</artifactId>
+            <artifactId>infinispan-query-dsl</artifactId>
         </dependency>
-        <!-- add this to process the AutoProtoSchemaBuilder(s): -->
+
+        <dependency>
+            <groupId>org.infinispan</groupId>
+            <artifactId>infinispan-remote-query-client</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.infinispan.protostream</groupId>
             <artifactId>protostream-processor</artifactId>

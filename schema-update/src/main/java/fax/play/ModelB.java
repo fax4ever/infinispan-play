@@ -1,12 +1,11 @@
 package fax.play;
 
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
+import org.infinispan.protostream.annotations.ProtoDoc;
 import org.infinispan.protostream.annotations.ProtoFactory;
 import org.infinispan.protostream.annotations.ProtoField;
 import org.infinispan.protostream.annotations.ProtoName;
 
-@Indexed
+@ProtoDoc("@Indexed")
 @ProtoName("Model")
 public class ModelB implements Model {
 
@@ -23,13 +22,13 @@ public class ModelB implements Model {
 
    @Deprecated
    @ProtoField(value = 1)
-   @KeywordField
+   @ProtoDoc("@Field(store = Store.NO, analyze = Analyze.NO)")
    public String getOriginal() {
       return original;
    }
 
    @ProtoField(value = 2)
-   @KeywordField
+   @ProtoDoc("@Field(store = Store.NO, analyze = Analyze.NO)")
    public String getDifferent() {
       return different;
    }
