@@ -6,6 +6,10 @@ import org.infinispan.configuration.cache.IndexStorage;
 import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
+import org.infinispan.transaction.LockingMode;
+import org.infinispan.transaction.TransactionMode;
+import org.infinispan.transaction.lookup.GenericTransactionManagerLookup;
+import org.infinispan.util.concurrent.IsolationLevel;
 
 public class Config {
 
@@ -26,7 +30,16 @@ public class Config {
             .indexing()
                .enable()
                .storage(IndexStorage.LOCAL_HEAP)
-               .addIndexedEntity(Game.class);
+               .addIndexedEntity(Game.class)
+            .locking()
+               .lockAcquisitionTimeout(120000)
+               .concurrencyLevel(500)
+               .isolationLevel(IsolationLevel.REPEATABLE_READ)
+            .transaction()
+               .lockingMode(LockingMode.PESSIMISTIC)
+               .autoCommit(false)
+               .transactionMode(TransactionMode.TRANSACTIONAL)
+               .transactionManagerLookup(new GenericTransactionManagerLookup());
 
       cacheManager.createCache(CACHE_NAME, builder.build());
       return cacheManager;

@@ -1,6 +1,9 @@
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import java.util.List;
+
+import javax.transaction.TransactionManager;
 
 import org.infinispan.Cache;
 import org.infinispan.manager.EmbeddedCacheManager;
@@ -56,6 +59,26 @@ public class GameTest {
 
       Query<Object[]> projection = queryFactory.create("select name from fax.play.Game");
       List<Object[]> results = projection.execute().list();
+      assertThat(results).hasSize(2);
+
+      TransactionManager tm = cache.getAdvancedCache().getTransactionManager();
+      try {
+         tm.begin();
+         Query<Object> command = queryFactory.create("delete from fax.play.Game");
+         int size = command.executeStatement();
+         assertThat(size).isZero(); // no transaction (???)
+         tm.commit();
+      } catch (Exception ex) {
+         try {
+            tm.rollback();
+         } catch (Exception e) {
+
+         }
+         fail("unexpected exception executing the command", ex);
+      }
+
+      projection = queryFactory.create("select name from fax.play.Game");
+      results = projection.execute().list();
       assertThat(results).hasSize(2);
    }
 }
