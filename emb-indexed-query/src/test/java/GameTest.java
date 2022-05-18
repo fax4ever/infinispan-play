@@ -1,5 +1,4 @@
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 import java.util.List;
 
@@ -17,6 +16,7 @@ import org.junit.jupiter.api.TestInstance;
 
 import fax.play.Config;
 import fax.play.Game;
+import fax.play.helper.TransactionHelper;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class GameTest {
@@ -41,11 +41,14 @@ public class GameTest {
    }
 
    @Test
-   public void test() {
+   public void test() throws Exception {
       Cache<Object, Object> cache = cacheManager.getCache(Config.CACHE_NAME);
+      TransactionManager transactionManager = cache.getAdvancedCache().getTransactionManager();
 
-      cache.put("tennis", new Game("Tennis", TENNIS_DESC));
-      cache.put("football", new Game("Football", FOOTBALL_DESC));
+      TransactionHelper.withinTransaction(transactionManager, () -> {
+         cache.put("tennis", new Game("Tennis", TENNIS_DESC));
+         cache.put("football", new Game("Football", FOOTBALL_DESC));
+      });
 
       QueryFactory queryFactory = Search.getQueryFactory(cache);
 
@@ -61,21 +64,11 @@ public class GameTest {
       List<Object[]> results = projection.execute().list();
       assertThat(results).hasSize(2);
 
-      TransactionManager tm = cache.getAdvancedCache().getTransactionManager();
-      try {
-         tm.begin();
+      TransactionHelper.withinTransaction(transactionManager, () -> {
          Query<Object> command = queryFactory.create("delete from fax.play.Game");
          int size = command.executeStatement();
          assertThat(size).isZero(); // no transaction (???)
-         tm.commit();
-      } catch (Exception ex) {
-         try {
-            tm.rollback();
-         } catch (Exception e) {
-
-         }
-         fail("unexpected exception executing the command", ex);
-      }
+      });
 
       projection = queryFactory.create("select name from fax.play.Game");
       results = projection.execute().list();
