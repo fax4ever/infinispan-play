@@ -10,7 +10,7 @@ public class SmokeTest {
 
    @BeforeEach
    public void before() {
-      config = new Config(System.getProperty("java.io.tmpdir"));
+      config = new Config();
    }
 
    @AfterEach
