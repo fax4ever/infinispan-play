@@ -18,6 +18,10 @@ public class CacheProvider {
       return cacheManager;
    }
 
+   public RemoteCacheManager getCacheManager() {
+      return cacheManager;
+   }
+
    public RemoteCacheManager updateSchemaAndGet(CacheDefinition cacheDefinition, GeneratedSchema ... schemas) {
       stop();
       cacheManager = CacheFactory.create(cacheDefinition, schemas);
@@ -28,6 +32,18 @@ public class CacheProvider {
       stop();
       cacheManager = CacheFactory.create(null, schemas);
       return cacheManager;
+   }
+
+   public void updateIndexSchema(String ... cacheNames) {
+      for (String cacheName : cacheNames) {
+         cacheManager.administration().updateIndexSchema(cacheName);
+      }
+   }
+
+   public void reindexCaches(String ... cacheNames) {
+      for (String cacheName : cacheNames) {
+         cacheManager.administration().reindexCache(cacheName);
+      }
    }
 
    public void stop() {
