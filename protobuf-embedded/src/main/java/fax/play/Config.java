@@ -29,10 +29,7 @@ public class Config {
             .storage(IndexStorage.LOCAL_HEAP)
             .addIndexedEntity(Game.class);
 
-      cacheManager.administration().removeCache(CACHE_NAME);
-      cache = cacheManager.administration()
-            .withFlags(CacheContainerAdmin.AdminFlag.VOLATILE)
-            .getOrCreateCache(CACHE_NAME, builder.build());
+      cache = cacheManager.createCache(CACHE_NAME, builder.build());
    }
 
    public Cache<Integer, Game> cache() {
