@@ -4,44 +4,34 @@ import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
 import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
 import org.infinispan.client.hotrod.impl.ConfigurationProperties;
+import org.infinispan.commons.configuration.StringConfiguration;
 import org.infinispan.commons.marshall.ProtoStreamMarshaller;
 import org.infinispan.protostream.GeneratedSchema;
 import org.infinispan.query.remote.client.ProtobufMetadataManagerConstants;
 
 public class CacheFactory {
 
-   public static RemoteCacheManager create() {
+   public static RemoteCacheManager create(ProtoStreamMarshaller marshaller) {
       ConfigurationBuilder builder = new ConfigurationBuilder();
       builder.addServer().host("127.0.0.1").port(ConfigurationProperties.DEFAULT_HOTROD_PORT)
             .security()
             .authentication()
             .username("user")
             .password("pass")
-            .marshaller(ProtoStreamMarshaller.class);
+            .marshaller(marshaller);
 
       return new RemoteCacheManager(builder.build());
    }
 
-   public static RemoteCacheManager create(CacheDefinition cacheDefinition, GeneratedSchema ... schemas) {
-      ConfigurationBuilder builder = new ConfigurationBuilder();
-      builder.addServer().host("127.0.0.1").port(ConfigurationProperties.DEFAULT_HOTROD_PORT)
-            .security()
-            .authentication()
-            .username("user")
-            .password("pass");
-
-      if (cacheDefinition != null) {
-         builder.remoteCache(cacheDefinition.getName())
-               .configuration(cacheDefinition.getConfiguration())
-               .marshaller(ProtoStreamMarshaller.class);
-      }
+   public static RemoteCacheManager create(CacheDefinition cacheDefinition, ProtoStreamMarshaller marshaller,
+                                           GeneratedSchema ... schemas) {
+      RemoteCacheManager remoteCacheManager = create(marshaller);
 
       for (GeneratedSchema schema : schemas) {
-         // Add marshaller in the client
-         builder.addContextInitializer(schema);
+         // Register proto schema && entity marshaller on client side
+         schema.registerSchema(marshaller.getSerializationContext());
+         schema.registerMarshallers(marshaller.getSerializationContext());
       }
-
-      RemoteCacheManager remoteCacheManager = new RemoteCacheManager(builder.build());
 
       for (GeneratedSchema schema : schemas) {
          // Register proto schema on server side
@@ -49,7 +39,12 @@ public class CacheFactory {
          metadataCache.put(schema.getProtoFileName(), schema.getProtoFile());
       }
 
+      if (cacheDefinition != null) {
+         remoteCacheManager.administration().removeCache(cacheDefinition.getName());
+         remoteCacheManager.administration().createCache(cacheDefinition.getName(),
+               new StringConfiguration(cacheDefinition.getConfiguration()));
+      }
+
       return remoteCacheManager;
    }
-
 }

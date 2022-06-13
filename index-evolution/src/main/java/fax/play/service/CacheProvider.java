@@ -1,6 +1,7 @@
 package fax.play.service;
 
 import org.infinispan.client.hotrod.RemoteCacheManager;
+import org.infinispan.commons.marshall.ProtoStreamMarshaller;
 import org.infinispan.protostream.GeneratedSchema;
 
 public class CacheProvider {
@@ -8,13 +9,19 @@ public class CacheProvider {
    public static final String CACHE1_NAME = "keyword1";
    public static final String CACHE2_NAME = "keyword2";
 
+   private final ProtoStreamMarshaller marshaller;
+
    private RemoteCacheManager cacheManager;
 
+   public CacheProvider() {
+      this.marshaller = new ProtoStreamMarshaller();
+   }
+
    public RemoteCacheManager init(CacheDefinition cacheDefinition, GeneratedSchema ... schemas) {
-      cacheManager = CacheFactory.create();
+      cacheManager = CacheFactory.create(marshaller);
       cacheManager.administration().removeCache(CACHE1_NAME);
       cacheManager.administration().removeCache(CACHE2_NAME);
-      cacheManager = CacheFactory.create(cacheDefinition, schemas);
+      cacheManager = CacheFactory.create(cacheDefinition, marshaller, schemas);
       return cacheManager;
    }
 
@@ -24,25 +31,19 @@ public class CacheProvider {
 
    public RemoteCacheManager updateSchemaAndGet(CacheDefinition cacheDefinition, GeneratedSchema ... schemas) {
       stop();
-      cacheManager = CacheFactory.create(cacheDefinition, schemas);
+      cacheManager = CacheFactory.create(cacheDefinition, marshaller, schemas);
       return cacheManager;
    }
 
    public RemoteCacheManager updateSchemaAndGet(GeneratedSchema ... schemas) {
       stop();
-      cacheManager = CacheFactory.create(null, schemas);
+      cacheManager = CacheFactory.create(null, marshaller, schemas);
       return cacheManager;
    }
 
    public void updateIndexSchema(String ... cacheNames) {
       for (String cacheName : cacheNames) {
          cacheManager.administration().updateIndexSchema(cacheName);
-      }
-   }
-
-   public void reindexCaches(String ... cacheNames) {
-      for (String cacheName : cacheNames) {
-         cacheManager.administration().reindexCache(cacheName);
       }
    }
 
