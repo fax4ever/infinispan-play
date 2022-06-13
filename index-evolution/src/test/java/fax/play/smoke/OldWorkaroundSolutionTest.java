@@ -27,7 +27,7 @@ import fax.play.service.CacheProvider;
 import fax.play.service.Model;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class SmokeTest {
+public class OldWorkaroundSolutionTest {
 
    private final CacheProvider cacheProvider = new CacheProvider();
 
@@ -46,7 +46,7 @@ public class SmokeTest {
       assertThat(result).hasOnlyElementsOfType(Model1A.class);
 
       cache = cacheProvider
-            .updateSchemaAndGet(Schema1B.INSTANCE)
+            .recreateRemoteCacheManager(Schema1B.INSTANCE)
             .getCache(CacheProvider.CACHE1_NAME);
 
       cache.put("2", new Model1B("Alessia", "Alessia"));
@@ -70,7 +70,8 @@ public class SmokeTest {
             .hasMessageContaining("Unknown field 'newName");
 
       RemoteCacheManager cacheManager = cacheProvider
-            .updateSchemaAndGet(new CacheDefinition(CacheProvider.CACHE2_NAME, "Model2"), Schema1B.INSTANCE, Schema2A.INSTANCE);
+            .recreateRemoteCacheManager(new CacheDefinition(CacheProvider.CACHE2_NAME, "Model2"),
+                  Schema1B.INSTANCE, Schema2A.INSTANCE);
 
       cache = cacheManager.getCache(CacheProvider.CACHE1_NAME);
       RemoteCache<String, Model> cache2 = cacheManager.getCache(CacheProvider.CACHE2_NAME);

@@ -1,5 +1,6 @@
 package fax.play.service;
 
+import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
 import org.infinispan.commons.marshall.ProtoStreamMarshaller;
 import org.infinispan.protostream.GeneratedSchema;
@@ -29,22 +30,20 @@ public class CacheProvider {
       return cacheManager;
    }
 
-   public RemoteCacheManager updateSchemaAndGet(CacheDefinition cacheDefinition, GeneratedSchema ... schemas) {
+   public RemoteCacheManager recreateRemoteCacheManager(CacheDefinition cacheDefinition, GeneratedSchema ... schemas) {
       stop();
       cacheManager = CacheFactory.create(cacheDefinition, marshaller, schemas);
       return cacheManager;
    }
 
-   public RemoteCacheManager updateSchemaAndGet(GeneratedSchema ... schemas) {
+   public RemoteCacheManager recreateRemoteCacheManager(GeneratedSchema ... schemas) {
       stop();
       cacheManager = CacheFactory.create(null, marshaller, schemas);
       return cacheManager;
    }
 
-   public void updateIndexSchema(String ... cacheNames) {
-      for (String cacheName : cacheNames) {
-         cacheManager.administration().updateIndexSchema(cacheName);
-      }
+   public void updateIndexSchema(RemoteCache<String, Model> cache, GeneratedSchema schema) {
+      CacheFactory.updateSchemaIndex(cache, marshaller, schema);
    }
 
    public void stop() {

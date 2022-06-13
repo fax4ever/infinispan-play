@@ -62,12 +62,8 @@ public class BasicsForNoDowntimeUpgradesTest {
         // Check there is only one with 3 in name field
         doQuery("FROM Model3 WHERE name LIKE '%3%'", cache, 1);
 
-
         // VERSION 2
-        cache = cacheProvider.updateSchemaAndGet(Schema3E.INSTANCE)
-                .getCache(CACHE1_NAME);
-
-        cacheProvider.updateIndexSchema(CACHE1_NAME);
+        cacheProvider.updateIndexSchema(cache, Schema3E.INSTANCE);
 
         // Create second version entities
         ModelUtils.createModel1Entities(cache, 5, ModelUtils.createModelE(2));
@@ -107,11 +103,11 @@ public class BasicsForNoDowntimeUpgradesTest {
         // VERSION 2 - note in this version we are NOT able to use the functionality that for the reason for adding index
         // Update to second schema that adds nameIndexed field
         CacheProvider cacheProviderV2 = new CacheProvider();
-        RemoteCache<String, Model> cacheV2 = cacheProviderV2.updateSchemaAndGet(Schema3D.INSTANCE)
+        RemoteCache<String, Model> cacheV2 = cacheProviderV2.recreateRemoteCacheManager(Schema3D.INSTANCE)
                 .getCache(CACHE1_NAME);
 
         // Index schema needs to be updated (this is done with no-downtime)
-        cacheProvider.updateIndexSchema(CACHE1_NAME);
+        cacheProvider.getCacheManager().administration().updateIndexSchema(CACHE1_NAME);
 
         // Create VERSION 2 entities
         // Entities created in this version needs to have both name and nameIndexed fields so that VERSION 1 is able to read
@@ -132,7 +128,7 @@ public class BasicsForNoDowntimeUpgradesTest {
 
         // VERSION 3 - note from this version we are able to use the functionality that was the reason for adding the index
         // Update schema to version without name field
-        cache = cacheProvider.updateSchemaAndGet(Schema3F.INSTANCE)
+        cache = cacheProvider.recreateRemoteCacheManager(Schema3F.INSTANCE)
                 .getCache(CACHE1_NAME);
 
         // Create VERSION 3 entities, entity V3 can't contain name field because ModelF doesn't contain it
@@ -183,19 +179,15 @@ public class BasicsForNoDowntimeUpgradesTest {
         // Update schema to not include index on name
         // Note: If the reason for removal is removal of field completely, the process would be the same with the difference,
         //  that this schema does not contain the field
-        cache = cacheProvider
-                .updateSchemaAndGet(Schema3A.INSTANCE)
-                .getCache(CACHE1_NAME);
-
         // update index schema
-        cacheProvider.updateIndexSchema(CACHE1_NAME);
+        cacheProvider.updateIndexSchema(cache, Schema3A.INSTANCE);
 
         // Create entities without index
         ModelUtils.createModel1Entities(cache, 5, ModelUtils.createModelA(2));
 
         // Try query with field that has the index in both versions
         doQuery("FROM Model3 WHERE entityVersion >= 1", cache, 10);
-        // TODO: Can we somehow cleanup indexed data only for name field?
+        // TODO ISPN-13948 Can we somehow cleanup indexed data only for name field?
     }
 
     @Test
@@ -210,12 +202,8 @@ public class BasicsForNoDowntimeUpgradesTest {
         doQuery("FROM Model3 WHERE name : '*3*'", cache, 1);
 
         // Update schema to VERSION 2 that contains both analyzed and non-analyzed field
-        cache = cacheProvider
-                .updateSchemaAndGet(Schema3G.INSTANCE)
-                .getCache(CACHE1_NAME);
-
         // update index schema
-        cacheProvider.updateIndexSchema(CACHE1_NAME);
+        cacheProvider.updateIndexSchema(cache, Schema3G.INSTANCE);
 
         // Create VERSION 2 entities with both indexes
         ModelUtils.createModel1Entities(cache, 5, ModelUtils.createModelG(2));
@@ -234,7 +222,7 @@ public class BasicsForNoDowntimeUpgradesTest {
         // VERSION 4
         // Now we can remove deprecated name field
         cache = cacheProvider
-                .updateSchemaAndGet(Schema3H.INSTANCE)
+                .recreateRemoteCacheManager(Schema3H.INSTANCE)
                 .getCache(CACHE1_NAME);
 
         ModelUtils.createModel1Entities(cache, 5, ModelUtils.createModelH(3));
@@ -253,12 +241,8 @@ public class BasicsForNoDowntimeUpgradesTest {
         doQuery("FROM Model3 WHERE name LIKE '%3%'", cache, 1);
 
         // Update schema to VERSION 2 that contains both non-analyzed and analyzed field
-        cache = cacheProvider
-                .updateSchemaAndGet(Schema3I.INSTANCE)
-                .getCache(CACHE1_NAME);
-
         // update index schema
-        cacheProvider.updateIndexSchema(CACHE1_NAME);
+        cacheProvider.updateIndexSchema(cache, Schema3I.INSTANCE);
 
         // Create VERSION 2 entities with both indexes
         ModelUtils.createModel1Entities(cache, 5, ModelUtils.createModelI(2));
@@ -277,7 +261,7 @@ public class BasicsForNoDowntimeUpgradesTest {
         // VERSION 4
         // Now we can remove deprecated name field
         cache = cacheProvider
-                .updateSchemaAndGet(Schema3F.INSTANCE)
+                .recreateRemoteCacheManager(Schema3F.INSTANCE)
                 .getCache(CACHE1_NAME);
 
         ModelUtils.createModel1Entities(cache, 5, ModelUtils.createModelF(3));

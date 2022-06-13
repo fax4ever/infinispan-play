@@ -51,7 +51,7 @@ message Model1 {
 Remember that we need to list this `Model1` on the `indexed-entities` attribute of the cache definition.
 This configuration is done when the cache `keyword1` is created.
 As long as the mapping is not updated everything works fine, both working on cache data and queries, 
-see `fax.play.smoke.SmokeTest`.
+see `fax.play.smoke.OldWorkaroundSolutionTest`.
 
 ## Add a new field
 

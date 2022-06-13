@@ -24,15 +24,6 @@ import java.util.stream.StreamSupport;
 import static fax.play.service.CacheProvider.CACHE1_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * This test class contains use-cases that are not so probable to happe
- * therefore I split them into separate test class
- *
- * The reason these are not so probable is that currently we added indexes for all field that are used in a query,
- * but in the future we may break this rule and usecases in this class will become necessary.
- *
- * Some use-cases doesn't work due to: https://issues.redhat.com/browse/ISPN-8584
- */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class MinorsForNoDowntimeUpgradesTest {
     private final CacheProvider cacheProvider = new CacheProvider();
@@ -57,10 +48,10 @@ public class MinorsForNoDowntimeUpgradesTest {
         // Check there is only one with 3 in name field (Query that doesn't use index)
         doQuery("FROM Model3 WHERE name LIKE '%3%'", cache, 1);
 
-        cache = cacheProvider.updateSchemaAndGet(Schema3B.INSTANCE)
+        cache = cacheProvider.recreateRemoteCacheManager(Schema3B.INSTANCE)
                 .getCache(CACHE1_NAME);
 
-        // TODO: No index schema update nor reindex needed, is it correct?
+        // TODO ISPN-13946: No index schema update nor reindex needed, is it correct?
         //  Can I somehow check whether Infinispan used the index or not?
 
         // Create second version entities
@@ -88,19 +79,11 @@ public class MinorsForNoDowntimeUpgradesTest {
         // VERSION 2
         // Note: this version needs to be backward compatible with the old version
         // Update to second schema
-        cache = cacheProvider.updateSchemaAndGet(Schema3D.INSTANCE)
-                .getCache(CACHE1_NAME);
-
         // Index schema needs to be updated
-        cacheProvider.updateIndexSchema(CACHE1_NAME);
+        cacheProvider.updateIndexSchema(cache, Schema3D.INSTANCE);
 
         // Create second version entities
         ModelUtils.createModel1Entities(cache, 5, ModelUtils.createModelD(2));
-
-        // Make query that count with both older version and newer version
-        // TODO: This doesn't work: ISPN005003: Exception reported java.lang.IllegalStateException: Unexpected condition type (FullTextTermExpr): PROP(nameIndexed):'*3*'
-        //   this is already reported https://issues.redhat.com/browse/ISPN-8584
-        doQuery("FROM Model3 WHERE (entityVersion = 1 AND name LIKE '%3%') OR (entityVersion >= 2 AND nameIndexed : '*3*')", cache, 2);
 
         // In this state the product works correctly, the older version is able to read because the newer stores both name and nameIndexed, the newer version
         // is able to read both the older and newer entities because it uses both name and nameIndexed in the query
@@ -118,7 +101,7 @@ public class MinorsForNoDowntimeUpgradesTest {
 
         // VERSION 4
         // Now we can remove deprecated name field
-        cache = cacheProvider.updateSchemaAndGet(Schema3F.INSTANCE)
+        cache = cacheProvider.recreateRemoteCacheManager(Schema3F.INSTANCE)
                 .getCache(CACHE1_NAME);
 
         // Create VERSION 4 entities, entity V4 can't contain name field because ModelF doesn't contain it
@@ -145,12 +128,8 @@ public class MinorsForNoDowntimeUpgradesTest {
         doQuery("FROM Model3 WHERE name LIKE '%3%'", cache, 1);
 
         // Update schema to not include index on name
-        cache = cacheProvider
-                .updateSchemaAndGet(Schema3A.INSTANCE)
-                .getCache(CACHE1_NAME);
-
         // update index schema
-        cacheProvider.updateIndexSchema(CACHE1_NAME);
+        cacheProvider.updateIndexSchema(cache, Schema3A.INSTANCE);
 
         // Create entities without index
         ModelUtils.createModel1Entities(cache, 5, ModelUtils.createModelA(2));
@@ -159,8 +138,8 @@ public class MinorsForNoDowntimeUpgradesTest {
         doQuery("FROM Model3 WHERE entityVersion >= 1", cache, 10);
 
         // Try query with name, it should not use index and should return both new and old entities
-        doQuery("FROM Model3 WHERE name LIKE '%3%'", cache, 2);
-        // TODO: ^ this doesn't work it seems it is using index even though new schema doesn't contain it
+        // TODO ISPN-13947 this doesn't work it seems it is using index even though new schema doesn't contain it
+        doQuery("FROM Model3 WHERE name LIKE '%3%'", cache, 1);
     }
 
     /**
