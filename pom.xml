@@ -20,6 +20,7 @@
         <module>unit-tests</module>
         <module>schema-update</module>
         <module>protobuf-embedded</module>
+        <module>query-performance</module>
     </modules>
 
 </project>
