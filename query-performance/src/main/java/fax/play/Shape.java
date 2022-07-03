@@ -27,7 +27,7 @@ public class Shape {
       this.description = description;
    }
 
-   @Keyword
+   @Keyword(sortable = true, projectable = true, aggregable = true)
    @ProtoField(value = 1)
    public String getName() {
       return name;

@@ -60,5 +60,8 @@ public class SmokeTest {
 
       QueryStatistics queryStatistics = new QueryStatistics(body);
       assertThat(queryStatistics).isNotNull();
+
+      // aggregations always produces hybrid queries
+      assertThat(queryStatistics.getHybridCount()).isPositive();
    }
 }
