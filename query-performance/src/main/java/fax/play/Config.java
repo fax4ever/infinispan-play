@@ -26,8 +26,8 @@ public class Config {
                "</local-cache>";
 
    private final RemoteCacheManager remoteCacheManager;
-   private final RemoteCache<Object, Shape> shapeCache;
-   private final RemoteCache<Object, Bla> blaCache;
+   private final RemoteCache<String, Shape> shapeCache;
+   private final RemoteCache<String, Bla> blaCache;
 
    public Config() {
       ConfigurationBuilder builder = new ConfigurationBuilder();
@@ -60,11 +60,11 @@ public class Config {
       remoteCacheManager.stop();
    }
 
-   public RemoteCache<Object, Shape> getShapeCache() {
+   public RemoteCache<String, Shape> getShapeCache() {
       return shapeCache;
    }
 
-   public RemoteCache<Object, Bla> getBlaCache() {
+   public RemoteCache<String, Bla> getBlaCache() {
       return blaCache;
    }
 }
