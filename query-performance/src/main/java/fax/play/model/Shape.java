@@ -1,17 +1,15 @@
-package fax.play;
+package fax.play.model;
 
 import org.infinispan.api.annotations.indexing.Basic;
 import org.infinispan.api.annotations.indexing.Indexed;
 import org.infinispan.api.annotations.indexing.Keyword;
 import org.infinispan.api.annotations.indexing.Text;
-import org.infinispan.protostream.GeneratedSchema;
-import org.infinispan.protostream.annotations.AutoProtoSchemaBuilder;
 import org.infinispan.protostream.annotations.ProtoFactory;
 import org.infinispan.protostream.annotations.ProtoField;
 import org.infinispan.protostream.annotations.ProtoName;
 
 @Indexed
-@ProtoName("Shape")
+@ProtoName("shape")
 public class Shape {
 
    private String name;
@@ -49,10 +47,5 @@ public class Shape {
    @ProtoField(value = 4)
    public String getDescription() {
       return description;
-   }
-
-   @AutoProtoSchemaBuilder(includeClasses = Shape.class, schemaFileName = "shape-schema.proto")
-   interface ShapeSchema extends GeneratedSchema {
-      ShapeSchema INSTANCE = new ShapeSchemaImpl();
    }
 }
