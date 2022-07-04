@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.Search;
@@ -79,7 +80,7 @@ public class SmokeTest {
    }
 
    @Test
-   public void bla() {
+   public void bla() throws ExecutionException, InterruptedException {
       RemoteCache<String, Bla> cache = config.getBlaCache();
       HashMap<String, Bla> bulk = new HashMap<>(CHUNK_SIZE);
 
@@ -97,6 +98,44 @@ public class SmokeTest {
          }
       }
 
-      CompletableFuture.allOf(promises.toArray(new CompletableFuture[promises.size()]));
+      CompletableFuture.allOf(promises.toArray(new CompletableFuture[promises.size()])).get();
+
+      Query<Bla> query = Search.getQueryFactory(cache).create("from bla p where p.a = :a and p.b = :b and p.c >= :cStart and p.c<= :cEnd");
+      query
+            .setParameter("a", 0)
+            .setParameter("b", "0")
+            .setParameter("cStart", 0L)
+            .setParameter("cEnd", 1000L)
+            .maxResults(10_000);
+
+      List<Bla> list = query.execute().list();
+      assertThat(list).isNotNull();
+
+      RestResponse restResponse = restClient.cache(cache.getName()).searchStats().toCompletableFuture().get();
+      assertThat(restResponse).isNotNull();
+      String body = restResponse.getBody();
+      assertThat(body).isNotNull();
+
+      QueryStatistics queryStatistics = new QueryStatistics(body);
+      assertThat(queryStatistics).isNotNull();
+
+      query = Search.getQueryFactory(cache).create("from bla p where p.a = :a and p.b = :b and p.c >= :cStart and p.c<= :cEnd");
+      query
+            .setParameter("a", 0)
+            .setParameter("b", "0")
+            .setParameter("cStart", 0L)
+            .setParameter("cEnd", 1000L)
+            .maxResults(10_000);
+
+      list = query.execute().list();
+      assertThat(list).isNotNull();
+
+      restResponse = restClient.cache(cache.getName()).searchStats().toCompletableFuture().get();
+      assertThat(restResponse).isNotNull();
+      body = restResponse.getBody();
+      assertThat(body).isNotNull();
+
+      queryStatistics = new QueryStatistics(body);
+      assertThat(queryStatistics).isNotNull();
    }
 }
