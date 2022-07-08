@@ -27,7 +27,8 @@ import fax.play.model.Shape;
 public class SmokeTest {
 
    private static final int CHUNK_SIZE = 10000;
-   private static final int MASSIVE_SIZE = CHUNK_SIZE * 100;
+   private static final int CHUNK_NUMBER = 100;
+   private static final int MASSIVE_SIZE = CHUNK_SIZE * CHUNK_NUMBER;
 
    private Config config;
    private RestClient restClient;
@@ -84,14 +85,13 @@ public class SmokeTest {
       RemoteCache<String, Bla> cache = config.getBlaCache();
       HashMap<String, Bla> bulk = new HashMap<>(CHUNK_SIZE);
 
-      ArrayList<CompletableFuture> promises = new ArrayList<>(MASSIVE_SIZE / CHUNK_SIZE + 1);
+      ArrayList<CompletableFuture> promises = new ArrayList<>(CHUNK_NUMBER);
 
-      for (long i = 0; i < MASSIVE_SIZE; i++) {
-         int numeral = (int) i % CHUNK_SIZE;
-         String sign = numeral + "";
-         bulk.put(sign, new Bla(numeral, sign, i));
+      for (int i = 0; i < MASSIVE_SIZE; i++) {
+         int numeral = i % CHUNK_SIZE;
+         bulk.put(i + "", new Bla(numeral, numeral + "", (long) numeral));
 
-         if (numeral == CHUNK_SIZE - 1) {
+         if (i % CHUNK_SIZE == CHUNK_SIZE - 1) {
             // flush the bulk
             promises.add(cache.putAllAsync(bulk));
             bulk.clear();
@@ -109,7 +109,7 @@ public class SmokeTest {
             .maxResults(10_000);
 
       List<Bla> list = query.execute().list();
-      assertThat(list).isNotNull();
+      assertThat(list).hasSize(CHUNK_NUMBER);
 
       RestResponse restResponse = restClient.cache(cache.getName()).searchStats().toCompletableFuture().get();
       assertThat(restResponse).isNotNull();
@@ -117,25 +117,6 @@ public class SmokeTest {
       assertThat(body).isNotNull();
 
       QueryStatistics queryStatistics = new QueryStatistics(body);
-      assertThat(queryStatistics).isNotNull();
-
-      query = Search.getQueryFactory(cache).create("from bla p where p.a = :a and p.b = :b and p.c >= :cStart and p.c<= :cEnd");
-      query
-            .setParameter("a", 0)
-            .setParameter("b", "0")
-            .setParameter("cStart", 0L)
-            .setParameter("cEnd", 1000L)
-            .maxResults(10_000);
-
-      list = query.execute().list();
-      assertThat(list).isNotNull();
-
-      restResponse = restClient.cache(cache.getName()).searchStats().toCompletableFuture().get();
-      assertThat(restResponse).isNotNull();
-      body = restResponse.getBody();
-      assertThat(body).isNotNull();
-
-      queryStatistics = new QueryStatistics(body);
       assertThat(queryStatistics).isNotNull();
    }
 }
