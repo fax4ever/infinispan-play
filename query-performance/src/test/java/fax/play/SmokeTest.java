@@ -100,23 +100,48 @@ public class SmokeTest {
 
       CompletableFuture.allOf(promises.toArray(new CompletableFuture[promises.size()])).get();
 
-      Query<Bla> query = Search.getQueryFactory(cache).create("from bla p where p.a = :a and p.b = :b and p.c >= :cStart and p.c<= :cEnd");
-      query
-            .setParameter("a", 0)
-            .setParameter("b", "0")
-            .setParameter("cStart", 0L)
-            .setParameter("cEnd", 1000L)
-            .maxResults(10_000);
-
-      List<Bla> list = query.execute().list();
-      assertThat(list).hasSize(CHUNK_NUMBER);
+      for (int i=0; i<100; i++) {
+         executeQuery(cache);
+      }
 
       RestResponse restResponse = restClient.cache(cache.getName()).searchStats().toCompletableFuture().get();
       assertThat(restResponse).isNotNull();
       String body = restResponse.getBody();
       assertThat(body).isNotNull();
 
+      assertThat(body).contains("\"bla\":{\"count\":" + MASSIVE_SIZE);
+      System.out.println("ENTITIES: " + MASSIVE_SIZE);
+
       QueryStatistics queryStatistics = new QueryStatistics(body);
       assertThat(queryStatistics).isNotNull();
+
+      Double localCount = queryStatistics.getLocalCount();
+      assertThat(localCount).isEqualTo(100d);
+
+      System.out.println("QUERY EXECUTED:" + localCount);
+      System.out.println("MAX TIME:" + queryStatistics.getLocalMax());
+      System.out.println("AVERAGE TIME:" + queryStatistics.getLocalAverage());
+
+      Double loadCount = queryStatistics.getLoadCount();
+      assertThat(localCount).isEqualTo(100d);
+
+      System.out.println("LOAD EXECUTED:" + loadCount);
+      System.out.println("MAX TIME:" + queryStatistics.getLoadMax());
+      System.out.println("AVERAGE TIME:" + queryStatistics.getLoadAverage());
+   }
+
+   private void executeQuery(RemoteCache<String, Bla> cache) {
+      int base = (int) Math.random() * 1000;
+
+      Query<Bla> query = Search.getQueryFactory(cache).create("from bla p where p.a = :a and p.b = :b and p.c >= :cStart and p.c<= :cEnd");
+      query
+            .setParameter("a", base)
+            .setParameter("b", base + "")
+            .setParameter("cStart", 0L)
+            .setParameter("cEnd", 1000L)
+            .maxResults(10_000);
+
+      List<Bla> list = query.execute().list();
+      assertThat(list).hasSize(CHUNK_NUMBER);
    }
 }

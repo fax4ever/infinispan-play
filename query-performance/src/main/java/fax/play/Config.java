@@ -17,7 +17,7 @@ public class Config {
    private static final String CACHE_DEFINITION =
          "<local-cache name=\"{{message-name}}\" statistics=\"true\">" +
                "    <encoding media-type=\"application/x-protostream\"/>" +
-               "    <indexing enabled=\"true\" storage=\"local-heap\">" +
+               "    <indexing enabled=\"true\" storage=\"filesystem\">" +
                "        <index-reader />" +
                "        <indexed-entities>" +
                "            <indexed-entity>{{message-name}}</indexed-entity>" +
