@@ -21,6 +21,7 @@
         <module>schema-update</module>
         <module>protobuf-embedded</module>
         <module>query-performance</module>
+        <module>thread-play</module>
     </modules>
 
 </project>
