@@ -23,6 +23,7 @@
         <module>query-performance</module>
         <module>thread-play</module>
         <module>tracing-hotrod-client</module>
+        <module>tracing-rest-client</module>
     </modules>
 
 </project>
