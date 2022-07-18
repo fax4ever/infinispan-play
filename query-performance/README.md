@@ -4,6 +4,12 @@ In order to run test, you need a Infinispan 14.0.0.Dev03 listening on 11222 (def
 and an admin group user defined on it, having credential user / pass.
 
 ``` bash
+infinispan-server/bin>./cli.sh user create -g admin -p pass user
+```
+
+## Run the test
+
+``` bash
 query-performance> mvn clean install
 ```
 

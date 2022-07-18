@@ -22,6 +22,7 @@
         <module>protobuf-embedded</module>
         <module>query-performance</module>
         <module>thread-play</module>
+        <module>tracing-hotrod-client</module>
     </modules>
 
 </project>
