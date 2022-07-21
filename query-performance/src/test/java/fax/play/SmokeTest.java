@@ -28,6 +28,8 @@ public class SmokeTest {
 
    private static final int CHUNK_SIZE = 10000;
    private static final int CHUNK_NUMBER = 100;
+   private static final int QUERY_TIMES = 100;
+
    private static final int MASSIVE_SIZE = CHUNK_SIZE * CHUNK_NUMBER;
 
    private Config config;
@@ -100,7 +102,7 @@ public class SmokeTest {
 
       CompletableFuture.allOf(promises.toArray(new CompletableFuture[promises.size()])).get();
 
-      for (int i=0; i<100; i++) {
+      for (int i = 0; i< QUERY_TIMES; i++) {
          executeQuery(cache);
       }
 
@@ -116,14 +118,14 @@ public class SmokeTest {
       assertThat(queryStatistics).isNotNull();
 
       Double localCount = queryStatistics.getLocalCount();
-      assertThat(localCount).isEqualTo(100d);
+      assertThat(localCount).isEqualTo(QUERY_TIMES);
 
       System.out.println("QUERY EXECUTED:" + localCount);
       System.out.println("MAX TIME:" + queryStatistics.getLocalMax());
       System.out.println("AVERAGE TIME:" + queryStatistics.getLocalAverage());
 
       Double loadCount = queryStatistics.getLoadCount();
-      assertThat(localCount).isEqualTo(100d);
+      assertThat(localCount).isEqualTo(QUERY_TIMES);
 
       System.out.println("LOAD EXECUTED:" + loadCount);
       System.out.println("MAX TIME:" + queryStatistics.getLoadMax());
