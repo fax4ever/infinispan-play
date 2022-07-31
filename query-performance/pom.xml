@@ -15,7 +15,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
 
-        <version.infinispan>14.0.0.Dev03</version.infinispan>
+        <version.infinispan>14.0.0.Dev04</version.infinispan>
     </properties>
 
     <dependencies>
