@@ -24,6 +24,7 @@
         <module>thread-play</module>
         <module>tracing-hotrod-client</module>
         <module>tracing-rest-client</module>
+        <module>protobuf-oneof</module>
     </modules>
 
 </project>
