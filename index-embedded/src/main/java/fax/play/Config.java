@@ -13,7 +13,7 @@ public class Config {
    private static final String CACHE_DEFINITION =
          "<local-cache name=\"{{message-name}}\" statistics=\"true\">" +
          "    <encoding media-type=\"application/x-protostream\"/>" +
-         "    <indexing enabled=\"true\" storage=\"filesystem\">" +
+         "    <indexing enabled=\"true\" storage=\"local-heap\">" +
          "        <index-reader />" +
          "        <indexed-entities>" +
          "            <indexed-entity>{{message-name}}</indexed-entity>" +
@@ -21,10 +21,13 @@ public class Config {
          "    </indexing>" +
          "</local-cache>";
 
-   private static final String POEM_MESSAGE_TYPE = "poem.Poem";
+   private static final String POEM_MESSAGE_TYPE = "Poem";
+   private static final String MODEL_MESSAGE_TYPE = "Model3";
 
    private final RemoteCacheManager remoteCacheManager;
+
    private final RemoteCache<Integer, Poem> poemCache;
+   private final RemoteCache<String, Model3J> modelCache;
 
    public Config() {
       ConfigurationBuilder builder = new ConfigurationBuilder();
@@ -46,7 +49,11 @@ public class Config {
       remoteCacheManager.administration().removeCache(POEM_MESSAGE_TYPE);
       remoteCacheManager.administration().createCache(POEM_MESSAGE_TYPE, new StringConfiguration(CACHE_DEFINITION.replace("{{message-name}}", POEM_MESSAGE_TYPE)));
 
+      remoteCacheManager.administration().removeCache(MODEL_MESSAGE_TYPE);
+      remoteCacheManager.administration().createCache(MODEL_MESSAGE_TYPE, new StringConfiguration(CACHE_DEFINITION.replace("{{message-name}}", MODEL_MESSAGE_TYPE)));
+
       poemCache = remoteCacheManager.getCache(POEM_MESSAGE_TYPE);
+      modelCache = remoteCacheManager.getCache(MODEL_MESSAGE_TYPE);
    }
 
    public void shutdown() {
@@ -55,5 +62,9 @@ public class Config {
 
    public RemoteCache<Integer, Poem> getPoemCache() {
       return poemCache;
+   }
+
+   public RemoteCache<String, Model3J> getModelCache() {
+      return modelCache;
    }
 }
