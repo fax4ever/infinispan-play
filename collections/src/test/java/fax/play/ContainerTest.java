@@ -39,13 +39,16 @@ public class ContainerTest {
 
    @Test
    public void test() {
-      List<Content> contentList = Arrays.asList(new Content("a"), new Content("b"), new Content("c"));
-      Container container = new Container(new Content("some-content"), contentList, new HashSet<>(contentList));
+      Content[] contentArray = {new Content("a"), new Content("b"), new Content("c")};
+      List<Content> contentList = Arrays.asList(contentArray);
+      Container container = new Container(
+            new Content("some-content"), contentList, new HashSet<>(contentList), contentArray);
       cache.put("1", container);
 
       Container loaded = cache.get("1");
       assertThat(loaded.getContent().getValue()).isEqualTo("some-content");
       assertThat(loaded.getContentList()).extracting("value").containsExactly("a", "b", "c");
       assertThat(loaded.getContentSet()).extracting("value").containsExactlyInAnyOrder("a", "b", "c");
+      assertThat(loaded.getContentArray()).extracting("value").containsExactly("a", "b", "c");
    }
 }

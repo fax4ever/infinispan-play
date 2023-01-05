@@ -13,12 +13,14 @@ public class Container {
    private Content content;
    private List<Content> contentList;
    private Set<Content> contentSet;
+   private Content[] contentArray;
 
    @ProtoFactory
-   public Container(Content content, List<Content> contentList, Set<Content> contentSet) {
+   public Container(Content content, List<Content> contentList, Set<Content> contentSet, Content[] contentArray) {
       this.content = content;
       this.contentList = contentList;
       this.contentSet = contentSet;
+      this.contentArray = contentArray;
    }
 
    @ProtoField(value = 1)
@@ -34,6 +36,11 @@ public class Container {
    @ProtoField(value = 3)
    public Set<Content> getContentSet() {
       return contentSet;
+   }
+
+   @ProtoField(value = 4)
+   public Content[] getContentArray() {
+      return contentArray;
    }
 
    @AutoProtoSchemaBuilder(includeClasses = { Container.class, Content.class }, schemaFileName = "model-schema.proto")
