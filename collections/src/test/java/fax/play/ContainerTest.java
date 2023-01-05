@@ -2,8 +2,11 @@ package fax.play;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.infinispan.client.hotrod.RemoteCache;
@@ -42,7 +45,9 @@ public class ContainerTest {
       Content[] contentArray = {new Content("a"), new Content("b"), new Content("c")};
       List<Content> contentList = Arrays.asList(contentArray);
       Container container = new Container(
-            new Content("some-content"), contentList, new HashSet<>(contentList), contentArray);
+            new Content("some-content"), contentList, new HashSet<>(contentList), contentArray,
+            new ArrayList<>(contentList), new LinkedList<>(contentList),
+            new HashSet<>(contentList), new LinkedHashSet<>(contentList));
       cache.put("1", container);
 
       Container loaded = cache.get("1");
@@ -50,5 +55,9 @@ public class ContainerTest {
       assertThat(loaded.getContentList()).extracting("value").containsExactly("a", "b", "c");
       assertThat(loaded.getContentSet()).extracting("value").containsExactlyInAnyOrder("a", "b", "c");
       assertThat(loaded.getContentArray()).extracting("value").containsExactly("a", "b", "c");
+      assertThat(loaded.getContentArrayList()).extracting("value").containsExactly("a", "b", "c");
+      assertThat(loaded.getContentLinkedList()).extracting("value").containsExactly("a", "b", "c");
+      assertThat(loaded.getContentHashSet()).extracting("value").containsExactlyInAnyOrder("a", "b", "c");
+      assertThat(loaded.getContentLinkedHashSet()).extracting("value").containsExactlyInAnyOrder("a", "b", "c");
    }
 }
