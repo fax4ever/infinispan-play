@@ -26,6 +26,7 @@
         <module>tracing-rest-client</module>
         <module>protobuf-oneof</module>
         <module>index-embedded</module>
+        <module>collections</module>
     </modules>
 
 </project>
