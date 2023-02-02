@@ -16,7 +16,7 @@ public class KeywordMessage {
    }
 
    @ProtoField(value = 1)
-   @Keyword
+   @Keyword(normalizer = "lowercase")
    public String getMessage() {
       return message;
    }
