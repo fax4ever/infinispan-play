@@ -60,6 +60,22 @@ public class AnalysisTest {
       Query<TextMessage> tQuery = queryFactory.create("from TextMessage t where t.message : 'Ickle'");
       QueryResult<TextMessage> tResult = tQuery.execute();
       assertThat(tResult.hitCount()).hasValue(4); // a text field matches on term presence
+
+      tQuery = queryFactory.create("from TextMessage t where t.message : 'message ickle query'");
+      tResult = tQuery.execute();
+      assertThat(tResult.hitCount()).hasValue(0);
+
+      tQuery = queryFactory.create("from TextMessage t where t.message : 'message for ickle query'");
+      tResult = tQuery.execute();
+      assertThat(tResult.hitCount()).hasValue(3);
+
+      tQuery = queryFactory.create("from TextMessage t where t.message : 'message' and t.message : 'ickle' and t.message : 'query'");
+      tResult = tQuery.execute();
+      assertThat(tResult.hitCount()).hasValue(4);
+
+      tQuery = queryFactory.create("from TextMessage t where t.message : (+'message' +'Ickle' +'query')'");
+      tResult = tQuery.execute();
+      assertThat(tResult.hitCount()).hasValue(7);
    }
 
    @BeforeAll
