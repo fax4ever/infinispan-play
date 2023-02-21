@@ -28,6 +28,7 @@
         <module>index-embedded</module>
         <module>collections</module>
         <module>analysis</module>
+        <module>sorting-schema-reindex</module>
     </modules>
 
     <dependencies>
