@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import fax.play.config.Config;
+import fax.play.model.Color;
 import fax.play.model.Developer;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -39,17 +40,19 @@ public class SortTest {
    public void testQueries() throws Exception {
       assertThat(cache).isNotNull();
 
-      cache.put(1, new Developer("fax4ever", 300));
+      cache.put(1, new Developer("fax4ever", 300, Color.RED));
 
       QueryFactory queryFactory = Search.getQueryFactory(cache);
-      Query<Developer> kQuery = queryFactory.create("from Developer d order by d.contributions");
-      QueryResult<Developer> kResult = kQuery.execute();
-      assertThat(kResult.hitCount()).hasValue(1);
+      Query<Developer> query = queryFactory.create("from Developer d order by d.contributions");
+      QueryResult<Developer> result = query.execute();
+      assertThat(result.hitCount()).hasValue(1);
 
       config.updateProtoSchemaServerSide();
 
-      kQuery = queryFactory.create("from Developer d order by d.contributions");
-      kResult = kQuery.execute();
-      assertThat(kResult.hitCount()).hasValue(1);
+      query = queryFactory.create("from Developer d order by d.contributions");
+      result = query.execute();
+      assertThat(result.hitCount()).hasValue(1);
+
+      assertThat(result.list().get(0).getFavouriteColor()).isEqualTo(Color.RED);
    }
 }

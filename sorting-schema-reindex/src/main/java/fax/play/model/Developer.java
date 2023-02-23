@@ -14,10 +14,13 @@ public class Developer {
 
    private Integer contributions;
 
+   private Color favouriteColor;
+
    @ProtoFactory
-   public Developer(String nick, Integer contributions) {
+   public Developer(String nick, Integer contributions, Color favouriteColor) {
       this.nick = nick;
       this.contributions = contributions;
+      this.favouriteColor = favouriteColor;
    }
 
    @Basic
@@ -32,7 +35,13 @@ public class Developer {
       return contributions;
    }
 
-   @AutoProtoSchemaBuilder(includeClasses = { Developer.class }, schemaFileName = "developer.proto", schemaFilePath = "proto")
+   @ProtoField(value = 3)
+   public Color getFavouriteColor() {
+      return favouriteColor;
+   }
+
+   @AutoProtoSchemaBuilder(includeClasses = { Developer.class, ColorAdapter.class },
+         schemaFileName = "developer.proto", schemaFilePath = "proto")
    public interface DeveloperSchema extends GeneratedSchema {
       DeveloperSchema INSTANCE = new DeveloperSchemaImpl();
    }
