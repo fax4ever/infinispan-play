@@ -29,6 +29,7 @@
         <module>collections</module>
         <module>analysis</module>
         <module>sorting-schema-reindex</module>
+        <module>circular-entity-proto-model</module>
     </modules>
 
     <dependencies>
