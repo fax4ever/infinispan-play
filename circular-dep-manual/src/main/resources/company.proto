@@ -1,0 +1,17 @@
+syntax = "proto2";
+
+package fax.play;
+
+message Company {
+
+   optional string name = 1;
+
+   repeated Employee employees = 2;
+}
+
+message Employee {
+
+   optional string name = 1;
+
+   optional Company company = 2;
+}

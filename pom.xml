@@ -30,6 +30,7 @@
         <module>analysis</module>
         <module>sorting-schema-reindex</module>
         <module>circular-entity-proto-model</module>
+        <module>circular-dep-manual</module>
     </modules>
 
     <dependencies>
