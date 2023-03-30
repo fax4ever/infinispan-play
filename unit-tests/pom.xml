@@ -9,35 +9,39 @@
     <version>1.0.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
 
-        <version.infinispan-test>0.1</version.infinispan-test>
-        <version.testcontainers>1.11.1</version.testcontainers>
-        <version.assertj>3.22.0</version.assertj>
-
-        <version.surefire-plugin>2.22.2</version.surefire-plugin>
+        <version.infinispan>14.0.7.Final</version.infinispan>
+        <version.assertj>3.24.2</version.assertj>
+        <version.junit>5.9.2</version.junit>
+        <version.surefire-plugin>3.0.0-M8</version.surefire-plugin>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.infinispan</groupId>
+                <artifactId>infinispan-bom</artifactId>
+                <version>14.0.6.Final</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
             <groupId>org.infinispan</groupId>
-            <artifactId>infinispan-testcontainers</artifactId>
-            <version>${version.infinispan-test}</version>
+            <artifactId>infinispan-server-testdriver-core</artifactId>
+            <version>${version.infinispan}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.infinispan</groupId>
-            <artifactId>infinispan-junit-5</artifactId>
-            <version>${version.infinispan-test}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.testcontainers</groupId>
+            <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>${version.testcontainers}</version>
+            <version>${version.junit}</version>
             <scope>test</scope>
         </dependency>
 
