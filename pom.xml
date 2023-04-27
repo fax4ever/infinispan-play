@@ -31,6 +31,7 @@
         <module>sorting-schema-reindex</module>
         <module>circular-entity-proto-model</module>
         <module>circular-dep-manual</module>
+        <module>proto-any-type</module>
     </modules>
 
     <dependencies>
