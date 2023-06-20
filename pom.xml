@@ -32,6 +32,7 @@
         <module>circular-entity-proto-model</module>
         <module>circular-dep-manual</module>
         <module>proto-any-type</module>
+        <module>proto-adapter</module>
     </modules>
 
     <dependencies>

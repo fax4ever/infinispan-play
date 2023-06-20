@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>fax.play</groupId>
+        <artifactId>infinispan-play</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>proto-adapter</artifactId>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.infinispan</groupId>
+                <artifactId>infinispan-bom</artifactId>
+                <version>15.0.0.Dev01</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.infinispan</groupId>
+            <artifactId>infinispan-client-hotrod</artifactId>
+        </dependency>
+        <!-- [ERROR] /Users/fabio/code/infinispan-play/proto-adapter/src/main/java/fax/play/model/AnimalSchema.java:[11,8] org.infinispan.protostream.annotations.ProtoSchemaBuilderException: Abstract classes are not allowed: fax.play.model.Animal -->
+<!--        <dependency>-->
+<!--            <groupId>org.infinispan.protostream</groupId>-->
+<!--            <artifactId>protostream-processor</artifactId>-->
+<!--        </dependency>-->
+    </dependencies>
+</project>
