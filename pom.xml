@@ -33,6 +33,7 @@
         <module>circular-dep-manual</module>
         <module>proto-any-type</module>
         <module>proto-adapter</module>
+        <module>sorting-embedded-entries</module>
     </modules>
 
     <dependencies>
