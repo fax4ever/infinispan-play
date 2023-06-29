@@ -34,6 +34,7 @@
         <module>proto-any-type</module>
         <module>proto-adapter</module>
         <module>sorting-embedded-entries</module>
+        <module>protogen-play</module>
     </modules>
 
     <dependencies>
