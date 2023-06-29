@@ -2,6 +2,8 @@ package fax.play.smoke;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.infinispan.client.hotrod.RemoteCache;
@@ -18,12 +20,13 @@ import fax.play.config.Config;
 import fax.play.model.AnyContainer;
 import fax.play.model.Hotel;
 import fax.play.model.House;
+import fax.play.model.ListOfAnyContainer;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AnyContainerTest {
 
    private Config config;
-   private RemoteCache<String, AnyContainer> cache;
+   private RemoteCache<String, Object> cache;
 
    @BeforeAll
    public void beforeAll() throws Exception {
@@ -54,29 +57,41 @@ public class AnyContainerTest {
 
       AnySchema.Any anyHotel = new AnySchema.Any("fax.play.any.Hotel", hotelBytes);
       AnySchema.Any anyHouse = new AnySchema.Any("fax.play.any.House", houseBytes);
+      List<AnySchema.Any> listOfAny = Arrays.asList(anyHotel, anyHouse);
 
       AnyContainer hotelContainer = new AnyContainer(anyHotel, 7, "other info");
       AnyContainer houseContainer = new AnyContainer(anyHouse, 9, "bla bla bla");
+      ListOfAnyContainer listOfAnyContainer = new ListOfAnyContainer(listOfAny, 739, "some meta-info");
 
       cache.put("hotel-1", hotelContainer);
       cache.put("house-1", houseContainer);
+      cache.put("collection-1", listOfAnyContainer);
 
-      hotelContainer = cache.get("hotel-1");
-      houseContainer = cache.get("house-1");
+      hotelContainer = (AnyContainer) cache.get("hotel-1");
+      houseContainer = (AnyContainer) cache.get("house-1");
+      listOfAnyContainer = (ListOfAnyContainer) cache.get("collection-1");
 
       assertThat(hotelContainer.getCounter()).isEqualTo(7);
       assertThat(hotelContainer.getDescription()).isEqualTo("other info");
       assertThat(houseContainer.getCounter()).isEqualTo(9);
-      assertThat(houseContainer.getDescription()).isEqualTo("bla bla bla");
+      assertThat(listOfAnyContainer.getDescription()).isEqualTo("some meta-info");
+      assertThat(listOfAnyContainer.getCounter()).isEqualTo(739);
 
       anyHotel = hotelContainer.getObject();
       anyHouse = houseContainer.getObject();
+      listOfAny = listOfAnyContainer.getObjects();
+      AnySchema.Any anyHotelInCollection = listOfAny.get(0);
+      AnySchema.Any anyHouseInCollection = listOfAny.get(1);
 
       assertThat(anyHotel.getTypeUrl()).isEqualTo("fax.play.any.Hotel");
       assertThat(anyHouse.getTypeUrl()).isEqualTo("fax.play.any.House");
+      assertThat(anyHotelInCollection.getTypeUrl()).isEqualTo("fax.play.any.Hotel");
+      assertThat(anyHouseInCollection.getTypeUrl()).isEqualTo("fax.play.any.House");
 
       hotelBytes = anyHotel.getValue();
       houseBytes = anyHouse.getValue();
+      assertThat(anyHotelInCollection.getValue()).isEqualTo(hotelBytes);
+      assertThat(anyHouseInCollection.getValue()).isEqualTo(houseBytes);
 
       Hotel hotelLoad = ProtobufUtil.fromByteArray(serializationContext, hotelBytes, Hotel.class);
       House houseLoad = ProtobufUtil.fromByteArray(serializationContext, houseBytes, House.class);

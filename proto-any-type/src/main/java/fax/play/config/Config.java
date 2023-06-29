@@ -36,7 +36,7 @@ public class Config implements Closeable {
       cacheManager = new RemoteCacheManager(builder.build());
    }
 
-   public RemoteCache<String, AnyContainer> recreateCache() throws IOException {
+   public RemoteCache<String, Object> recreateCache() throws IOException {
       cacheManager.administration().removeCache(CACHE_NAME);
 
       String configuration;
