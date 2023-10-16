@@ -4,10 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.infinispan.Cache;
+import org.infinispan.commons.api.query.HitCount;
 import org.infinispan.commons.api.query.Query;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.junit.jupiter.api.Test;
@@ -54,6 +57,25 @@ public class SmokeTest {
       end = System.currentTimeMillis();
 
       log.info("Aggregation query executed in " + (end - start) + " millis");
-      assertThat(SaleFactory.countAllValues(result)).isEqualTo(ITEMS_PER_DAY);
+      Map<String, Long> aggregatedResult = SaleFactory.convert(result);
+      assertThat(SaleFactory.countAllValues(aggregatedResult)).isEqualTo(ITEMS_PER_DAY);
+
+      HashMap<String, Long> aggregationResults = new HashMap<>();
+      for (Status status : Status.values()) {
+         Query<Sale> specific = cache.query("from fax.play.Sale where moment = :moment and status = :status");
+         specific.setParameter("moment", targetDay);
+         specific.setParameter("status", status.name());
+         specific.maxResults(10); // lower the max result => we don't need the values only the count
+         specific.hitCountAccuracy(100_000); // raise the count accuracy if we need to target more than 10_000 items
+
+         start = System.currentTimeMillis();
+         HitCount count = specific.execute().count();
+         end = System.currentTimeMillis();
+         log.info("Simple query executed in " + (end - start) + " millis");
+
+         assertThat(count.isExact()).isTrue(); // we need exact count
+         aggregationResults.put(status.name(), (long) count.value());
+      }
+      assertThat(aggregatedResult).isEqualTo(aggregationResults);
    }
 }

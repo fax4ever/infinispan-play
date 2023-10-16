@@ -5,7 +5,9 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class SaleFactory {
 
@@ -37,7 +39,12 @@ public class SaleFactory {
       return day.atTime(0, 0).toInstant(ZoneOffset.UTC).toEpochMilli();
    }
 
-   public static Long countAllValues(List<Object[]> aggregationResult) {
-      return (Long) aggregationResult.stream().map(array -> array[1]).reduce((o, o2) -> ((long) o + (long) o2)).get();
+   public static Long countAllValues(Map<String, Long> aggregationResult) {
+      return aggregationResult.values().stream().reduce((o, o2) -> o + o2).get();
+   }
+
+   public static Map<String, Long> convert(List<Object[]> aggregationResult) {
+      return aggregationResult.stream().collect(Collectors.toMap(
+            objects -> (String) objects[0], objects -> (long) objects[1]));
    }
 }
