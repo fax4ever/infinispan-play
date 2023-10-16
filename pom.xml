@@ -35,6 +35,7 @@
         <module>proto-adapter</module>
         <module>sorting-embedded-entries</module>
         <module>protogen-play</module>
+        <module>aggregation-massive</module>
     </modules>
 
     <dependencies>
