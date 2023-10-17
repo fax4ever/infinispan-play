@@ -9,10 +9,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.hibernate.search.engine.search.aggregation.AggregationKey;
+import org.hibernate.search.engine.search.aggregation.SearchAggregation;
+import org.hibernate.search.engine.search.predicate.SearchPredicate;
+import org.hibernate.search.engine.search.query.SearchQuery;
+import org.hibernate.search.engine.search.query.SearchResult;
+import org.hibernate.search.engine.search.sort.SearchSort;
 import org.infinispan.Cache;
 import org.infinispan.commons.api.query.HitCount;
 import org.infinispan.commons.api.query.Query;
 import org.infinispan.manager.EmbeddedCacheManager;
+import org.infinispan.query.impl.ComponentRegistryUtils;
+import org.infinispan.search.mapper.mapping.SearchMapping;
+import org.infinispan.search.mapper.scope.SearchScope;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
@@ -77,5 +86,42 @@ public class SmokeTest {
          aggregationResults.put(status.name(), (long) count.value());
       }
       assertThat(aggregatedResult).isEqualTo(aggregationResults);
+
+      // try native Hibernate Search aggregations
+      SearchMapping searchMapping = ComponentRegistryUtils.getSearchMapping(cache);
+      SearchScope<Sale> scope = searchMapping.scope(Sale.class);
+
+      AggregationKey<Map<String, Long>> aggregationKey = AggregationKey.of("codesByStatus");
+      SearchPredicate whereTheMoment = scope.predicate().match().field("moment").matching(targetDay).toPredicate();
+      SearchPredicate withAnyCode = scope.predicate().exists().field("code").toPredicate();
+      SearchPredicate predicate = scope.predicate().and(whereTheMoment, withAnyCode).toPredicate();
+      SearchAggregation<Map<String, Long>> aggregation = scope.aggregation().terms().field("status", String.class).toAggregation();
+      SearchSort sort = scope.sort().field("status").toSort();
+
+      SearchQuery<Sale> nativeQuery = searchMapping.getMappingSession().search(scope)
+            .where(predicate)
+            .aggregation(aggregationKey, aggregation)
+            .sort(sort)
+            .toQuery();
+
+      start = System.currentTimeMillis();
+      SearchResult<Sale> searchResult = nativeQuery.fetch(10);
+      end = System.currentTimeMillis();
+      assertThat(searchResult).isNotNull();
+      Map<String, Long> nativeAggregation = searchResult.aggregation(aggregationKey);
+      assertThat(aggregatedResult).isEqualTo(nativeAggregation);
+      long millis = searchResult.took().toMillis();
+      log.info("Native query executed in " + millis + " - " + (end - start) + " millis");
+
+      query = cache.query("select status, count(code) from fax.play.Sale where moment = :moment group by status order by status");
+      query.setParameter("moment", targetDay);
+
+      start = System.currentTimeMillis();
+      result = query.list();
+      end = System.currentTimeMillis();
+
+      log.info("Aggregation query executed in " + (end - start) + " millis");
+      aggregatedResult = SaleFactory.convert(result);
+      assertThat(SaleFactory.countAllValues(aggregatedResult)).isEqualTo(ITEMS_PER_DAY);
    }
 }

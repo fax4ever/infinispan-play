@@ -8,10 +8,10 @@ public class Sale {
 
    private String id;
 
-   @Basic(projectable = true, aggregable = true)
+   @Basic
    private String code;
 
-   @Basic(sortable = true, projectable = true, aggregable = true)
+   @Basic(sortable = true, aggregable = true)
    private String status;
 
    @Basic
